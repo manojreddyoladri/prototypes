@@ -107,11 +107,11 @@ Websockets/
 
 ## Events
 
-| Event       | Direction   | Description                                                  |
-| ----------- | ----------- | ------------------------------------------------------------ |
-| `connection`| Server      | Fired when a client connects.                                |
-| `register`  | Client → Server | Client sends username to register and mark user online. |
-| `disconnect`| Server      | Fired when a client disconnects; server marks user offline.  |
+| Event        | Direction       | Description                                                 |
+| ------------ | --------------- | ----------------------------------------------------------- |
+| `connection` | Server          | Fired when a client connects.                               |
+| `register`   | Client → Server | Client sends username to register and mark user online.     |
+| `disconnect` | Server          | Fired when a client disconnects; server marks user offline. |
 
 ## Notes
 

@@ -35,3 +35,8 @@ Thumbs.db
 
 # Coverage
 coverage/
+
+# Go binaries (e.g. from go build in Connection-pool/)
+connection-pool
+/Connection-pool/connection-pool
+*.exe
