@@ -1,0 +1,6 @@
+{
+  "include": ["Streaming-logs"],
+  "venvPath": "Streaming-logs",
+  "venv": ".venv",
+  "pythonVersion": "3.13"
+}

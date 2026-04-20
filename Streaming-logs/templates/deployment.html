@@ -1,0 +1,17 @@
+<script>
+    const deploymentId = "{{ deployment_id }}";
+    const source = new EventSource(`/logs/${deploymentId}`);
+    source.onmessage = (event) => {
+        var logEntry = document.createElement("li");
+        logEntry.textContent = event.data;
+        document.getElementById("logs").prepend(logEntry);
+    };
+</script>
+
+<a href="/">Home</a>
+<hr />
+
+<h2>Deployment: {{ deployment_id }}</h2>
+<hr />
+
+<ul id="logs"></ul>

@@ -1,0 +1,10 @@
+<form method="post" action="/deployments">
+    <button type="submit">New Deployment</button>
+</form>
+
+<h2>Deployments</h2>
+<ul>
+    {% for deployment in deployments %}
+        <li><a href="/deployments/{{ deployment }}">{{ deployment }}</a></li>
+    {% endfor %}
+</ul>
