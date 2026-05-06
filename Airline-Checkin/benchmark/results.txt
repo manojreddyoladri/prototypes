@@ -1,0 +1,9 @@
+approach=1 run=1 assigned=2 RESULT approach=1 users=120 success=2 no_seat=118 failures=0 assigned=2 duration_ms=243
+approach=1 run=2 assigned=2 RESULT approach=1 users=120 success=2 no_seat=118 failures=0 assigned=2 duration_ms=174
+approach=1 run=3 assigned=4 RESULT approach=1 users=120 success=4 no_seat=116 failures=0 assigned=4 duration_ms=87
+approach=2 run=1 assigned=120 RESULT approach=2 users=120 success=120 no_seat=0 failures=0 assigned=120 duration_ms=217
+approach=2 run=2 assigned=120 RESULT approach=2 users=120 success=120 no_seat=0 failures=0 assigned=120 duration_ms=200
+approach=2 run=3 assigned=120 RESULT approach=2 users=120 success=120 no_seat=0 failures=0 assigned=120 duration_ms=168
+approach=3 run=1 assigned=120 RESULT approach=3 users=120 success=120 no_seat=0 failures=0 assigned=120 duration_ms=97
+approach=3 run=2 assigned=120 RESULT approach=3 users=120 success=120 no_seat=0 failures=0 assigned=120 duration_ms=60
+approach=3 run=3 assigned=120 RESULT approach=3 users=120 success=120 no_seat=0 failures=0 assigned=120 duration_ms=56
