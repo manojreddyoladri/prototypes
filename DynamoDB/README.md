@@ -31,6 +31,9 @@ This project was created for **learning purposes** — to understand how DynamoD
 ```
 DynamoDB/
 ├── client.go                 # Public DynamoDBClient API
+├── cmd/
+│   └── demo/
+│       └── main.go           # Runnable demo (GetItem, Query, Scan)
 ├── internal/
 │   ├── catalog/              # System catalog bootstrap and metadata cache
 │   ├── db/                   # MySQL connection pool
@@ -112,6 +115,107 @@ set -a && source .env && set +a
 ```bash
 go build ./...
 ```
+
+## Run the Demo
+
+The fastest way to try the prototype is the included demo program at `cmd/demo/main.go`. It connects to MySQL, bootstraps the system catalog, creates a sample table, seeds data, and runs **GetItem**, **Query** (base table, LSI, and GSI), and **Scan**.
+
+### Steps
+
+**1. Complete [Installation](#installation)** — MySQL running, `.env` configured, dependencies downloaded.
+
+**2. Load environment variables**
+
+```bash
+set -a && source .env && set +a
+```
+
+**3. Run the demo**
+
+```bash
+go run ./cmd/demo
+```
+
+The demo is **idempotent** — safe to run multiple times. On the first run it creates the `demo_products` table; on later runs it reuses the existing table and upserts the sample items.
+
+### What the demo does
+
+| Step | Operation | Details |
+|------|-----------|---------|
+| 1 | Bootstrap | Creates `_ddb_tables` and `_ddb_indexes` catalog tables if missing |
+| 2 | CreateTable | Creates `demo_products` with PK `product_id`, SK `variant`, LSI `by_category`, GSI `by_brand` |
+| 3 | PutItem | Inserts 3 sample products (2 under partition `p1`, 1 under `p2`) |
+| 4 | GetItem | Point read for key `(p1, v1)` |
+| 5 | Query | Base table — all items in partition `p1` where `variant >= v1` |
+| 6 | Query (LSI) | Via `by_category` — items for `(p1, hardware)` |
+| 7 | Query (GSI) | Via `by_brand` — all items where `brand = acme` |
+| 8 | Scan | Reads up to 10 items from the full table |
+
+### Expected output
+
+You should see JSON printed for each operation:
+
+```
+=== DynamoDB on MySQL — demo ===
+
+--- GetItem (p1, v1) ---
+{ "product_id": "p1", "variant": "v1", "name": "Widget", ... }
+
+--- Query partition p1 (sk >= v1) ---
+[ { "product_id": "p1", "variant": "v2", ... }, { "product_id": "p1", "variant": "v1", ... } ]
+
+--- Query LSI by_category (p1, hardware) ---
+[ ... 2 items ... ]
+
+--- Query GSI by_brand (acme) ---
+[ ... 2 items ... ]
+
+--- Scan (limit 10) ---
+[ ... 3 items total ... ]
+
+Done. Inspect MySQL with:
+  USE dynamodb_emulator; SELECT * FROM demo_products;
+```
+
+### What to check
+
+**In the terminal output**
+
+- **GetItem** returns a single item (`Widget`) for key `(p1, v1)`.
+- **Query (base table)** returns 2 items — both variants under partition `p1`.
+- **Query (LSI)** returns 2 items — only products with a `category` attribute (sparse: `p2` has no category and is excluded from the LSI).
+- **Query (GSI)** returns 2 items — both `acme` brand products.
+- **Scan** returns all 3 items in the table.
+
+**In MySQL** — open a MySQL shell and verify the underlying storage:
+
+```sql
+USE dynamodb_emulator;
+
+-- All DynamoDB tables managed by this prototype
+SHOW TABLES;
+
+-- Base table: pk/sk columns + JSON item_data
+SELECT pk, sk, item_data FROM demo_products;
+
+-- System catalog
+SELECT * FROM _ddb_tables;
+SELECT * FROM _ddb_indexes WHERE table_name = 'demo_products';
+
+-- LSI shadow table (sparse — p2 is absent because it has no category)
+SELECT pk, lsi_sk, base_pk, base_sk FROM demo_products__lsi__by_category;
+
+-- GSI shadow table (sparse — p2 appears because it has brand=other)
+SELECT gsi_pk, gsi_sk, base_pk, base_sk FROM demo_products__gsi__by_brand;
+```
+
+| Check | Expected result |
+|-------|-----------------|
+| `demo_products` row count | 3 rows |
+| `_ddb_tables` entry | One row for `demo_products` with `pk_name=product_id`, `sk_name=variant` |
+| `_ddb_indexes` entries | 2 rows — LSI `by_category` and GSI `by_brand` |
+| LSI shadow table rows | 2 rows (only items with `category` attribute) |
+| GSI shadow table rows | 3 rows (all items have a `brand` attribute) |
 
 ## Usage
 
