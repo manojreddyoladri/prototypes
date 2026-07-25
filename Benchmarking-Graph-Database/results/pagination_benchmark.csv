@@ -1,0 +1,10 @@
+metric,key,value,unit
+full_pagination,100,0.012524,seconds
+full_pagination,1000,0.084813,seconds
+full_pagination,5000,0.364885,seconds
+full_pagination,10000,0.677766,seconds
+single_page_skip,0,6.5910,milliseconds
+single_page_skip,100,6.5944,milliseconds
+single_page_skip,1000,6.9901,milliseconds
+single_page_skip,5000,7.4761,milliseconds
+single_page_skip,9900,5.2225,milliseconds
